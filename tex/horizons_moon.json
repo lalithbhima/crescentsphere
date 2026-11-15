@@ -1,0 +1,41 @@
+{
+ "source": "NASA/JPL Horizons API, DE441, target Moon (301), geocentric, frame MOON_ME",
+ "retrieved": "2026-11-13T14:13:59+00:00",
+ "jd0": 2460676.5,
+ "stepDays": 0.08333333333333333,
+ "n": 70129,
+ "fields": [
+  "sunX",
+  "sunY",
+  "sunP",
+  "earthX",
+  "earthY",
+  "earthP",
+  "sunDistKm",
+  "earthDistKm"
+ ],
+ "sceneFields": [
+  "moonX",
+  "moonY",
+  "moonZ",
+  "sunX",
+  "sunY",
+  "sunZ",
+  "moonVx",
+  "moonVy",
+  "moonVz",
+  "axX",
+  "axY",
+  "axZ",
+  "ayX",
+  "ayY",
+  "ayZ",
+  "apX",
+  "apY",
+  "apZ",
+  "sunRangeRate",
+  "earthRangeRate",
+  "earthSunRangeRate"
+ ],
+ "sceneFrame": "geocentric mean ecliptic of date, km and km/s"
+}

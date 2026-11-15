@@ -1,0 +1,14 @@
+# macOS / editor / tool noise
+.DS_Store
+**/__pycache__/
+pglite-debug.log
+.claude/
+.firebase/
+
+# Huge or regenerable data, kept locally only (not in git)
+# ~1 GB global LOLA tiles, rebuild with tools/make_global_tiles.py
+tex/global/
+# on-demand LOLA cutter cache, created by server.py
+tex/cache/
+# raw NASA Moon Trek downloads (~120 MB)
+trek_downloads/

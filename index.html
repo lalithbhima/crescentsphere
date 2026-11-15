@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lunar Landing Site Navigator — NASA Space Apps 2026</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="explorer">
+<canvas id="gl"></canvas>
+<div id="labels"></div>
+<div id="fade"></div>
+
+<div id="loader"><div class="ring"></div><h1>LUNAR LANDING SITE NAVIGATOR</h1><p id="loadmsg">Building the Moon…</p><div class="bar"><i id="loadbar"></i></div></div>
+
+<header id="top">
+  <div class="brand"><span class="moonicon"></span><b>LUNAR NAVIGATOR</b></div>
+  <nav id="crumbs"><button data-view="space" class="on">Space</button><i>/</i><button data-view="moon">Moon</button><i>/</i><button data-view="surface">Surface</button></nav>
+  <div class="modes"><button id="mExp" class="on">Explorer</button><button id="mRes">Researcher</button></div>
+</header>
+
+
+
+<div id="leftcol">
+<aside id="sites" class="glass">
+  <div class="phead"><b>Landing sites</b><button id="sitesToggle" title="Collapse">–</button></div>
+  <div id="siteBody">
+    <div id="siteList"></div>
+    <div class="custom"><span>Custom</span><input id="cLat" type="number" step="0.01" placeholder="lat °" value="-89.45"><input id="cLon" type="number" step="0.01" placeholder="lon °E" value="-137.3"><button id="cGo">Go</button></div>
+  </div>
+</aside>
+
+</div>
+
+<aside id="side">
+  <div class="card glass" id="cardMap">
+    <div class="ctitle" id="mapTitle">Where to land</div>
+    <div class="mapwrap"><canvas id="cvMap"></canvas><div id="mapProg"></div><div id="mapTip"></div></div>
+    <div class="mapacts"><button id="mapFull" class="primary">Show full heatmap on the Moon</button><button id="mapBest">Go to the best spot</button></div>
+    <div class="cbar" id="mapLegend"></div>
+  </div>
+  <div class="card glass" id="cardDist">
+    <button id="distBtn" class="on">Hide distances</button>
+    <div id="distOut"></div>
+  </div>
+  <div class="card glass" id="cardScore">
+    <div class="infotext">
+      <div class="irow" id="sunPill"><span id="sunLabel">Sun</span><b id="sunBig">-</b></div>
+      <div class="irow"><span>Sun elevation</span><b id="sunSmall"></b></div>
+      <div class="irow" id="earthPill"><span id="earthLabel">Earth</span><b id="earthBig">-</b></div>
+      <div class="irow"><span>Earth elevation</span><b id="earthSmall"></b></div>
+      <div class="irow" id="eclRow"><span id="eclLabel">Earth eclipse of the Sun</span><b id="eclVal">-</b></div>
+      <div class="irow"><span>Local solar time</span><b id="lstVal">-</b></div>
+      <div class="irow" id="sitePill"><span>Site</span><b id="siteName">-</b></div>
+      <div class="irow"><span>Type</span><b id="siteCat">Site</b></div>
+      <div class="irow"><span>Coordinates</span><b id="siteCoord"></b></div>
+    </div>
+    <div class="res" id="resStats"></div>
+  </div>
+  <div class="card glass"><div class="ctitle">Sun and Earth over the next month</div><div class="keyrow"><span><i class="kb sun"></i>Sun</span><span><i class="kb earth"></i>Earth</span></div><canvas id="cvCurves" height="240"></canvas></div>
+  <div class="card glass" id="timeline">
+    <div class="ctitle">Date and time <span class="utc">UTC</span></div>
+    <input id="dt" type="datetime-local">
+    <div class="speeds" id="speeds"><button data-s="0">Pause</button><button data-s="0.0006944">1 min/s</button><button data-s="0.0416667" class="on">1 h/s</button><button data-s="0.25">6 h/s</button><button data-s="1">1 d/s</button><button data-s="4">4 d/s</button></div>
+    <div class="jumps"><button id="jBest">Best 7-day window</button><button id="jNow">Today</button></div>
+  </div>
+
+  <div id="compare" class="card glass"><div class="chead"><b>Compare scenarios</b><button id="pinBtn" class="primary">Pin this site and date</button></div><div class="cnote">Pin up to 4 combinations. Pin the same site on another date to compare dates, or other sites to compare places. Each card keeps the date it was pinned on.</div><div id="cards"></div></div>
+  <div class="card glass res" id="cardMC">
+    <div class="ctitle">Monte Carlo simulation</div>
+    <label class="mcdate">Destination date (landing, UTC)<input id="destDate" type="datetime-local"></label>
+    <label class="mcdate">Where to look<select id="mcRegion"><option value="all">Anywhere on the Moon</option><option value="south">South pole region (south of 80°S)</option><option value="near">Near side</option><option value="far">Far side</option></select></label>
+    <label class="mcdate">What matters most<select id="mcPrio"><option value="balanced">Balanced</option><option value="comms">Power and Earth link first</option><option value="fuel">Least fuel first</option></select></label>
+    <button id="mcRun" class="primary">Find the best landing site</button>
+    <div id="mcText"></div><div id="mcRank"></div>
+  </div>
+  <div class="card glass" id="cardMis">
+    <div class="ctitle">Real spacecraft paths</div>
+    <div class="cnote">Flight paths from NASA/JPL Horizons. They are drawn in the frame that turns with the Moon, so each one ends at the Moon wherever it is today.</div>
+    <div id="misList"></div>
+    <div id="misInfo"></div>
+    <button id="misHide" style="display:none">Hide path</button>
+  </div>
+  <div class="card glass res"><button id="csv">Export 30-day visibility (CSV)</button><div id="resTable"></div></div>
+</aside>
+
+<div id="fabs">
+  <button id="bTour" title="Fly from Earth to the Moon at true scale">True-scale tour</button>
+  <button id="bScale">Scale ruler</button><button id="bPole">South pole</button><button id="bHeat">Heat-map on Moon</button><button id="bLand" class="primary">Land here</button>
+  <div class="sfab">
+    <button id="vChase" class="on">Chase view</button><button id="vSun">Face the Sun</button><button id="vEarth">Face Earth</button><button id="bTracks" class="on">Sun and Earth paths</button><button id="bBeams">Direction lines</button><button id="bAtmo">Compare: Earth sky</button><button id="bUp">Back to orbit</button>
+  </div>
+</div>
+
+
+
+
+
+<div id="poleView">
+  <canvas id="pvCanvas"></canvas><div id="pvLabels"></div><i id="pvMark"></i>
+  <div class="pvbar"><div><b id="pvTitle">Terrain</b><span id="pvSub"></span></div><button id="pvClose">Back to the Moon</button></div>
+  <div class="pvpanel">
+    <div class="pvrow"><button id="pvSlope" class="on">Slope</button><button id="pvHill">Plain relief</button><button id="pvShadow">Current Sun shadows</button></div>
+    <label class="pvex">Vertical exaggeration <b id="pvExagV">3.0×</b><input id="pvExag" type="range" min="1" max="8" step="0.5" value="3"></label>
+    <div id="pvLegend"><div class="pvbarg"></div><div class="pvticks"><span>0°</span><span>10°</span><span>20°</span><span>30°</span><span>40°+</span></div><div class="pvcap">Slope steepness</div></div>
+    <div id="pvRead"></div>
+    <div id="pvStats"></div>
+  </div>
+</div>
+<div id="terrainLoad"><span class="tlring"></span><span>Loading real terrain for <b id="terrainLoadName"></b></span></div>
+<div id="tip"></div>
+<div id="toast"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
